@@ -4,124 +4,336 @@
 
 ### What are we building?
 
-sifa-pecs-creator is a web-based tool that will help to take new requirements from stakeholders and convert them into a functional RDP for the product lead, without the need of having extensive meetings all the time any stakeholder have a new idea. This will turn the discovery sessions async and just use the meeting to refine and approve those requirements.
+`sifa-specs-creator` is a web application that helps SIFA stakeholders document legacy screens and features without needing to write formal product requirements.
 
-The application structure will be divided by Projects, Modules, Features, Screens, Requirements, Business Rules, Specs.
+A stakeholder can:
 
-### Who is it for?
+- Select a Module.
+- Create a Feature or Screen.
+- Identify who uses it.
+- Upload a screenshot of SIFA Desktop.
+- Explain in plain Spanish what the screen does.
+- Describe the normal workflow.
+- Document known rules, restrictions, or special cases.
 
-- Stakeholders of projects with a lot of business logic knowledge and the know how of the product.
-- Engineers and architects working in the project.
+AI then analyzes the information, asks a short clarification interview when needed, and converts the approved knowledge into structured requirements.
 
-### What problem does it solve?
-
-Sometimes the stakeholders don't have all the concrete ideas of the feature we are building right away, or they are too busy during the week to jump into a 1-2 hours meetings.
-This is going to reduce the friction about what they wat to build in the product and improve the communication between technical and non-technical team members.
-
----
-
-## 2. Technical Constraints
-
-- **Frontend:** React, Tailwind CSS
-- **Backend:** Node.js with Express
-- **Database:** Supabase PostgreSQL
-- **Language:** TypeScript
-- **Hosting / Infrastructure:** Vercel
-- **Important Libraries:** Shadcn
+The final output of the application is an approved Markdown (`.md`) requirements document that can later be manually used as input for GitHub Spec Kit.
 
 ---
 
-## 3. Domain Rules
+## 2. Who Is It For?
 
-Document the rules that the system must enforce regardless of implementation.
+### Primary User
 
-Examples:
+Spanish-speaking SIFA stakeholders who:
 
-- A reservation cannot overlap another reservation for the same resource.
-- A user must be authenticated before creating a reservation.
-- Only authorized roles may modify certain records.
+- Know the business processes.
+- Understand how the current system works.
+- May not have Product Management experience.
+- Need a simple way to explain requirements asynchronously.
 
-These rules are authoritative while they remain part of the project's approved documentation.
+### Secondary Users
 
--
-
-If a rule changes, the relevant specification or project documentation must be updated before the implementation is changed.
-
----
-
-## 4. Engineering Rules
-
-Define how the project should be implemented.
-
-### Architecture
-
-- Preferred project structure.
-- Architectural patterns to use.
-- Patterns explicitly avoided.
-- Module boundaries when relevant.
-
-### Code Style
-
-- Naming conventions.
-- Functional vs object-oriented preferences.
-- Reusability expectations.
-- Dependency rules.
-
-### Simplicity
-
-Do not introduce abstractions, infrastructure, dependencies, or features without a current requirement that justifies them.
+- Product Lead
+- Software Engineers
+- Technical Leads
+- Architects
+- QA Engineers
 
 ---
 
-## 5. Quality & Safety Rules
+## 3. Problem We Are Solving
 
-### Validation
+A large amount of SIFA business knowledge exists in:
 
-Define important validation expectations.
+- The current desktop application.
+- Existing workflows.
+- Stakeholders' experience.
+- Informal conversations.
 
-### Error Handling
+Capturing this knowledge currently requires long discovery meetings and repeated clarification.
 
-Define how technical failures should be handled.
+The goal of this application is to make discovery more asynchronous and reduce communication friction between business and technical teams.
 
-### Security
+Stakeholders should explain the business in their own words.
 
-Define authentication, authorization, secrets, and sensitive-data expectations.
-
-### Testing
-
-Identify which functionality requires automated tests.
+The application should handle the structure.
 
 ---
 
-## 6. AI / SDD Rules
+## 4. Core Workflow
 
-### Specification First
+```text
+Stakeholder
+    ↓
+Create Feature
+    ↓
+Upload Screenshot
+    ↓
+Explain Purpose & Workflow
+    ↓
+AI Analysis
+    ↓
+Short AI Interview
+    ↓
+Review What AI Understood
+    ↓
+Generate Requirements
+    ↓
+Human Review / Approval
+    ↓
+Export Feature.md
+```
 
-Implementation must follow the approved specification.
+After export, the engineering team may manually use the Markdown document fro creating specs documents.
 
-Do not introduce functionality that is not required by the specification.
+---
 
-### No Speculation
+## 5. Stakeholder Intake
 
-Do not invent:
+The initial Feature intake should remain minimal.
 
-- Business rules
-- Features
-- User roles
-- Permissions
-- Integrations
-- Data requirements
+The stakeholder provides:
 
-when they have not been established.
+- Module
+- Feature / Screen Name
+- Who uses this screen?
+- Screenshot
+- What is this screen used for?
+- Step-by-step explanation of what the user normally does
+- Known rules, restrictions, or special cases
 
-### Conflict Handling
+The stakeholder should not need to understand formal requirement terminology.
 
-If a specification conflicts with the Project Constitution, identify the conflict before implementation.
+---
 
-If the requested behavior represents an intentional change to a foundational rule, update the appropriate documentation first.
+## 6. AI Interview
 
-### Scope Discipline
+AI should only ask questions that help resolve important missing information or ambiguity.
 
-Do not implement features “for later,” speculative abstractions, or unnecessary infrastructure.
+### Interview Rules
 
-Build only what the current specification requires.
+- Maximum 7 questions per Feature.
+- Stop earlier when enough information exists.
+- Ask one question at a time.
+- Prefer closed questions.
+- Maximum 4 options per question.
+- Prefer multi-select when several answers may apply.
+- Allow optional free-text context.
+- Do not repeat information already provided.
+- Questions must be specific to the current Feature.
+
+The interview should primarily clarify:
+
+1. Preconditions
+2. Roles and permissions
+3. Expected outcomes
+4. Exceptions
+5. Validations or errors
+6. Dependencies with other SIFA areas
+7. Current behavior vs desired behavior
+
+These are areas to cover, not seven mandatory questions.
+
+---
+
+## 7. Requirements Output
+
+The application generates structured:
+
+- User Stories
+- Business Rules
+- Functional Requirements
+- Acceptance Criteria
+- Open Questions
+
+These requirements remain proposals until reviewed and approved.
+
+The approved requirements are then exported into a Markdown document.
+
+Example:
+
+```text
+Feature
+├── User Stories
+├── Business Rules
+├── Functional Requirements
+├── Acceptance Criteria
+├── Open Questions
+└── Sources
+```
+
+The database remains the source of truth.
+
+The `.md` file is an export of the approved information.
+
+---
+
+## 8. Human Approval
+
+AI must never silently establish business behavior as fact.
+
+Generated requirements should support states such as:
+
+```text
+Draft
+↓
+Needs Review
+↓
+Approved
+```
+
+A human must approve requirements before they are treated as authoritative.
+
+When information is uncertain, the system should:
+
+- Ask a clarification question.
+- Create an Open Question.
+- Mark the requirement for review.
+
+It should not guess.
+
+---
+
+## 9. Traceability
+
+Whenever possible, generated requirements should be traceable to the information that produced them.
+
+Example:
+
+```text
+Stakeholder Input
+      ↓
+Interview Answer
+      ↓
+Business Rule
+      ↓
+Functional Requirement
+      ↓
+Acceptance Criteria
+```
+
+The system should make it possible to answer:
+
+> Why does this requirement exist?
+
+---
+
+## 10. Language
+
+The stakeholder experience is Spanish-first.
+
+- Stakeholder input remains in Spanish.
+- AI interviews are in Spanish.
+- Requirements shown for review are in Spanish.
+- Original stakeholder wording should be preserved.
+
+Technical identifiers may remain language-independent.
+
+Engineering artifacts may later be created in English if needed.
+
+The stakeholder's approved Spanish requirements remain the original business source.
+
+---
+
+## 11. Current vs Desired Behavior
+
+The application must distinguish between:
+
+```text
+Current SIFA Behavior
+Desired Behavior
+Both
+Unknown / Needs Decision
+```
+
+Existing behavior should not automatically be assumed to be correct or desirable.
+
+This is especially important during the migration from SIFA Desktop to the new system.
+
+---
+
+## 12. Domain Structure
+
+The high-level project structure is:
+
+```text
+Project
+└── Module
+    └── Feature
+        ├── Screens
+        ├── Requirements
+        ├── Sources
+        └── Open Questions
+```
+
+Project-level concepts may also include:
+
+```text
+Actors
+Glossary
+```
+
+The Feature is the main unit of discovery.
+
+A Feature may involve one or more Screens.
+
+---
+
+## 13. AI Rules
+
+AI may:
+
+- Analyze stakeholder input.
+- Analyze screenshots.
+- Identify ambiguity.
+- Ask clarification questions.
+- Generate structured requirements.
+
+AI must not invent:
+
+- Business rules.
+- Roles.
+- Permissions.
+- Workflows.
+- Integrations.
+- Exceptions.
+- Legacy behavior.
+
+AI-generated information must remain reviewable.
+
+---
+
+## 14. POC Boundaries
+
+The POC intentionally does not include:
+
+- Automatic Spec Kit execution.
+- Automatic GitHub publishing.
+- Screenshot annotations.
+- Automatic UI element detection.
+- Autonomous agents.
+- RAG or vector databases.
+- Fine-tuning.
+- Superpowers integration.
+- Automatic code generation from stakeholder input.
+
+These capabilities may be considered later if the core workflow proves useful.
+
+---
+
+## 15. Success Criteria
+
+The POC is successful if a Spanish-speaking stakeholder can document a SIFA Feature without understanding formal requirements engineering.
+
+A stakeholder should be able to:
+
+1. Create a Feature.
+2. Upload a screenshot.
+3. Explain the workflow in plain Spanish.
+4. Complete a short AI-guided interview.
+5. Review what the AI understood.
+6. Approve the generated requirements.
+
+The application should then produce a clean Markdown document containing enough approved business context to be used manually as input for GitHub Spec Kit.
